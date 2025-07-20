@@ -7,11 +7,20 @@
 
 // External Imports
 import { Bot } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 // Logo Component
 const Logo = () => {
+  const naviage = useNavigate();
+
   return (
-    <div className="flex items-center gap-2 cursor-pointer text-primary">
+    <div
+      onClick={() => {
+        window.scrollTo(0, 0);
+        naviage('/');
+      }}
+      className="flex items-center gap-2 cursor-pointer text-primary"
+    >
       <Bot className="w-8 h-8" />
       <h1 className="font-bold text-2xl">NebulaGen</h1>
     </div>
