@@ -9,6 +9,7 @@
 import AiTools from '../components/AiTools';
 import Hero from '../components/Hero';
 import Navbar from '../components/Navbar';
+import Testimonial from '../components/Testimonial';
 
 // Home Component
 const Home = () => {
@@ -17,6 +18,7 @@ const Home = () => {
       <Navbar />
       <Hero />
       <AiTools />
+      <Testimonial />
     </>
   );
 };
