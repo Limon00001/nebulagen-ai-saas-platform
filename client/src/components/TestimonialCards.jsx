@@ -22,6 +22,7 @@ const TestimonialCards = ({ dummyTestimonialData }) => {
               .fill(0)
               .map((_, index) => (
                 <img
+                  key={index}
                   src={
                     index < testimonial.rating
                       ? assets.star_icon
