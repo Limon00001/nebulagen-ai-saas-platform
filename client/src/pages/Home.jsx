@@ -6,6 +6,7 @@
  */
 
 // Internal Imports
+import Hero from '../components/Hero';
 import Navbar from '../components/Navbar';
 
 // Home Component
@@ -13,6 +14,7 @@ const Home = () => {
   return (
     <>
       <Navbar />
+      <Hero />
     </>
   );
 };
