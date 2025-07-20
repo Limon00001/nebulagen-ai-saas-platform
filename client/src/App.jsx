@@ -15,6 +15,7 @@ import Dashboard from './pages/Dashboard';
 import GenerateImages from './pages/GenerateImages';
 import Home from './pages/Home';
 import Layout from './pages/Layout';
+import NotFound from './pages/NotFound';
 import RemoveBackground from './pages/RemoveBackground';
 import RemoveObject from './pages/RemoveObject';
 import ReviewResume from './pages/ReviewResume';
@@ -36,6 +37,7 @@ const App = () => {
           <Route path="blog-titles" element={<BlogTitles />} />
           <Route path="review-resume" element={<ReviewResume />} />
         </Route>
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </div>
   );
