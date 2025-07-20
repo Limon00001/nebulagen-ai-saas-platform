@@ -1,0 +1,28 @@
+/*
+ * Author: Monayem Hossain Limon
+ * GitHub: https://github.com/Limon00001
+ * Date: 20 Jul, 2025
+ * @copyright 2025 monayem_hossain_limon
+ */
+
+/* Google Font */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
+
+/* Tailwind */
+@import 'tailwindcss';
+
+/* Theme */
+@theme {
+  --font-outfit: 'Outfit', sans-serif;
+}
+
+/* Layer */
+@layer base {
+  html {
+    @apply scroll-smooth font-outfit;
+  }
+
+  body {
+    @apply p-0 m-0 box-border overflow-x-hidden;
+  }
+}
