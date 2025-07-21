@@ -26,7 +26,7 @@ const RemoveBackground = () => {
         className="w-full max-w-lg p-4 bg-white rounded-lg border border-gray-200"
       >
         <div className="flex items-center gap-3">
-          <Sparkles className="w-5 text-[#ff4938]" />
+          <Sparkles className="w-5 text-cyan-600" />
           <h1 className="text-xl font-semibold">Background Removal</h1>
         </div>
         <p className="mt-6 text-sm font-medium">Upload Image</p>
@@ -47,7 +47,7 @@ const RemoveBackground = () => {
           Supports PNG, JPEG, JPG and other image formats
         </p>
 
-        <button className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#f6ab41] to-[#ff4938] text-white px-4 py-2 rounded-lg text-sm mt-6 transition cursor-pointer">
+        <button className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-cyan-600 to-cyan-500 text-white px-4 py-2 rounded-lg text-sm mt-6 transition cursor-pointer">
           <Eraser className="w-5 text-white" />
           Remove Background
         </button>
@@ -56,7 +56,7 @@ const RemoveBackground = () => {
       {/* Right Side */}
       <div className="w-full max-w-lg p-4 bg-white rounded-lg flex flex-col border border-gray-200 min-h-96">
         <div className="flex items-center gap-3">
-          <Eraser className="w-5 h-5 text-[#8e37eb]" />
+          <Eraser className="w-5 h-5 text-cyan-600" />
           <h1 className="text-xl font-semibold">Processed Image</h1>
         </div>
 
