@@ -82,7 +82,7 @@ const WriteArticle = () => {
         <div className="flex-1 flex justify-center items-center">
           <div className="flex flex-col items-center gap-5 text-sm text-gray-400">
             <Edit className="w-9 h-9" />
-            <p>Enter a topic and click ""Generate Article"" to get started</p>
+            <p>Enter a topic and click "Generate Article" to get started</p>
           </div>
         </div>
       </div>
