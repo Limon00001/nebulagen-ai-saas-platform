@@ -6,7 +6,7 @@
  */
 
 // External Imports
-const { neon } = require('@neondatabase/serverless');
+import { neon } from '@neondatabase/serverless';
 
 // Database
 const sql = neon(`${process.env.DATABASE_URL}`);
