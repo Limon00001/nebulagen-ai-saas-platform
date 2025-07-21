@@ -78,6 +78,7 @@ const generateArticle = async (req, res) => {
   }
 };
 
+// Generate Blog Title
 const generateBlogTitle = async (req, res) => {
   try {
     // Destructure Request
@@ -135,6 +136,7 @@ const generateBlogTitle = async (req, res) => {
   }
 };
 
+// Generate Image
 const generateImage = async (req, res) => {
   try {
     // Destructure Request
@@ -193,5 +195,52 @@ const generateImage = async (req, res) => {
   }
 };
 
+// Remove Image Background
+const removeImageBackground = async (req, res) => {
+  try {
+    // Destructure Request
+    const { userId } = req.auth();
+    const { image } = req.file;
+    const plan = req.plan;
+
+    // if the user has premium plan
+    if (plan !== 'premium') {
+      return res.status(400).json({
+        success: false,
+        message:
+          'This feature is only available for premium users. Please upgrade to a premium plan.',
+      });
+    }
+
+    // Image from Cloudinary and get secure url
+    const { secure_url } = await cloudinary.uploader.upload(image.path, {
+      transformation: [
+        {
+          effect: 'remove_background',
+          background_removal: 'remove_the_background',
+        },
+      ],
+    });
+
+    // Insert into database
+    await sql` INSERT INTO creations (user_id, prompt, content, type) VALUES (${userId}, 'Remove background from image', ${secure_url}, 'image');`;
+
+    // Return response
+    return res.status(200).json({
+      success: true,
+      message: 'Image background removed successfully.',
+      content: secure_url,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 // Export
-export { generateArticle, generateBlogTitle, generateImage };
+export {
+  generateArticle,
+  generateBlogTitle,
+  generateImage,
+  removeImageBackground,
+};
