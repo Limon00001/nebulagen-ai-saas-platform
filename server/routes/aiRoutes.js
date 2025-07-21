@@ -9,7 +9,11 @@
 import express from 'express';
 
 // Internal Imports
-import { generateArticle } from '../controllers/aiController.js';
+import {
+  generateArticle,
+  generateBlogTitle,
+  generateImage,
+} from '../controllers/aiController.js';
 import { auth } from '../middlewares/auth.js';
 
 // Create Router
@@ -17,6 +21,8 @@ const aiRouter = express.Router();
 
 // Routes
 aiRouter.post('/generate-article', auth, generateArticle);
+aiRouter.post('/generate-blog-title', auth, generateBlogTitle);
+aiRouter.post('/generate-image', auth, generateImage);
 
 // Export
 export default aiRouter;

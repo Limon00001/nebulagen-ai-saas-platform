@@ -7,6 +7,8 @@
 
 // External Imports
 import { clerkClient } from '@clerk/express';
+import axios from 'axios';
+import { v2 as cloudinary } from 'cloudinary';
 import OpenAI from 'openai';
 
 // Internal Imports
@@ -133,5 +135,63 @@ const generateBlogTitle = async (req, res) => {
   }
 };
 
+const generateImage = async (req, res) => {
+  try {
+    // Destructure Request
+    const { userId } = req.auth();
+    const { prompt, publish } = req.body;
+    const plan = req.plan;
+
+    // if the user has premium plan
+    if (plan !== 'premium') {
+      return res.status(400).json({
+        success: false,
+        message:
+          'This feature is only available for premium users. Please upgrade to a premium plan.',
+      });
+    }
+
+    // Form Data for image
+    const formData = new FormData();
+    formData.append('prompt', prompt);
+
+    // Response from ClipDrop
+    const { data } = await axios.post(
+      'https://clipdrop-api.co/text-to-image/v1',
+      formData,
+      {
+        headers: {
+          'x-api-key': process.env.CLIPDROP_API_KEY,
+        },
+        responseType: 'arraybuffer',
+      },
+    );
+
+    // Image from ClipDrop
+    const base64Image = `data:image/png;base64,${Buffer.from(
+      data,
+      'binary',
+    ).toString('base64')}`;
+
+    // Upload to Cloudinary and get secure url
+    const { secure_url } = await cloudinary.uploader.upload(base64Image);
+
+    // Insert into database
+    await sql` INSERT INTO creations (user_id, prompt, content, type, publish) VALUES (${userId}, ${prompt}, ${secure_url}, 'image', ${
+      publish ?? false
+    });`;
+
+    // Return response
+    return res.status(200).json({
+      success: true,
+      message: 'Image generated successfully.',
+      content: secure_url,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 // Export
-export { generateArticle, generateBlogTitle };
+export { generateArticle, generateBlogTitle, generateImage };
