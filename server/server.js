@@ -12,6 +12,7 @@ import 'dotenv/config';
 import express from 'express';
 
 // Internal Imports
+import connectCloudinary from './configs/cloudinary.js';
 import aiRouter from './routes/aiRoutes.js';
 
 // Create Express App
@@ -19,6 +20,9 @@ const app = express();
 
 // Port
 const port = process.env.PORT || 5001;
+
+// Connect to Cloudinary
+await connectCloudinary();
 
 // Middlewares
 app.use(cors());
