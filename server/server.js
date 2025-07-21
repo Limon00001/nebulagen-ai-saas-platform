@@ -11,6 +11,9 @@ import cors from 'cors';
 import 'dotenv/config';
 import express from 'express';
 
+// Internal Imports
+import aiRouter from './routes/aiRoutes.js';
+
 // Create Express App
 const app = express();
 
@@ -28,6 +31,7 @@ app.get('/', (req, res) => {
   res.send('Server is running...');
 });
 app.use(requireAuth());
+app.use('/api/ai', aiRouter);
 
 // Start Server
 app.listen(port, () => console.log(`Server is running on port ${port}`));
