@@ -25,6 +25,7 @@ const BlogTitles = () => {
   const [selectedCategory, setSelectedCategory] = useState('General');
   const [inputData, setInputData] = useState('');
 
+  // Form Submit Handler
   const handleSubmit = (e) => {
     e.preventDefault();
   };

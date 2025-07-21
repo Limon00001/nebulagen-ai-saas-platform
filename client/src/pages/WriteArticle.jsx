@@ -20,6 +20,7 @@ const WriteArticle = () => {
   const [selectedLength, setSelectedLength] = useState(articleLength[0]);
   const [inputData, setInputData] = useState('');
 
+  // Form Submit Handler
   const handleSubmit = (e) => {
     e.preventDefault();
   };
