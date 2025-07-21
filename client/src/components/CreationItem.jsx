@@ -30,6 +30,7 @@ const CreationItem = ({ item }) => {
         </button>
       </div>
 
+      {/* If expanded then show content */}
       {expanded && (
         <div>
           {item.type === 'image' ? (

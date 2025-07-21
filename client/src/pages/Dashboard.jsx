@@ -35,6 +35,7 @@ const Dashboard = () => {
   return (
     <div className="h-full overflow-y-scroll p-6">
       <div className="flex justify-start gap-4 flex-wrap">
+        {/* Total Creations */}
         <div className="flex items-center justify-between w-72 p-4 px-6 bg-white rounded-lg border border-gray-200">
           <div className="text-slate-600">
             <p className="text-sm">Total Creations</p>
@@ -45,6 +46,7 @@ const Dashboard = () => {
           </div>
         </div>
 
+        {/* Active Plan */}
         <div className="flex items-center justify-between w-72 p-4 px-6 bg-white rounded-lg border border-gray-200">
           <div className="text-slate-600">
             <p className="text-sm">Active Plan</p>
@@ -60,8 +62,10 @@ const Dashboard = () => {
         </div>
       </div>
 
+      {/* Recent Creations */}
       <div className="space-y-3">
         <p className="mt-6 mb-4">Recent Creations</p>
+        {/* Creation Items */}
         {creations.map((item) => (
           <CreationItem key={item.id} item={item} />
         ))}
