@@ -6,6 +6,7 @@
  */
 
 // External Imports
+import { clerkMiddleware, requireAuth } from '@clerk/express';
 import cors from 'cors';
 import 'dotenv/config';
 import express from 'express';
@@ -20,11 +21,13 @@ const port = process.env.PORT || 5001;
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(clerkMiddleware());
 
 // Routes
 app.get('/', (req, res) => {
   res.send('Server is running...');
 });
+app.use(requireAuth());
 
 // Start Server
 app.listen(port, () => console.log(`Server is running on port ${port}`));
