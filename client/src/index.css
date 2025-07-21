@@ -27,3 +27,14 @@
     @apply p-0 m-0 box-border overflow-x-hidden;
   }
 }
+
+@layer components {
+  .reset-tw,
+  .reset-tw * {
+    all: revert !important;
+  }
+
+  .cl-drawerRoot {
+    @apply z-10;
+  }
+}
