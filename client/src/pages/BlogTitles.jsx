@@ -34,6 +34,7 @@ const BlogTitles = () => {
   const [loading, setLoading] = useState(false);
   const [content, setContent] = useState('');
 
+  // Get User Token
   const { getToken } = useAuth();
 
   // Form Submit Handler

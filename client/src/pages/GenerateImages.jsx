@@ -6,8 +6,14 @@
  */
 
 // External Imports
+import { useAuth } from '@clerk/clerk-react';
+import axios from 'axios';
 import { Image, Sparkles } from 'lucide-react';
 import { useState } from 'react';
+import { toast } from 'react-hot-toast';
+
+// Base URL
+axios.defaults.baseURL = import.meta.env.VITE_BASE_URL;
 
 // Generate Images Component
 const GenerateImages = () => {
@@ -24,10 +30,46 @@ const GenerateImages = () => {
   const [selectedStyle, setSelectedStyle] = useState('Realistic Style');
   const [inputData, setInputData] = useState('');
   const [publish, setPublish] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [content, setContent] = useState('');
+
+  // Get User Token
+  const { getToken } = useAuth();
 
   // Form Submit Handler
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
+    try {
+      // Enable Loading Indicator
+      setLoading(true);
+
+      // Generate Image
+      const prompt = `Generate an image of ${inputData} in ${selectedStyle} style.`;
+
+      // Api Call
+      const { data } = await axios.post(
+        '/api/ai/generate-image',
+        { prompt, publish },
+        {
+          headers: {
+            Authorization: `Bearer ${await getToken()}`,
+          },
+        },
+      );
+
+      // If api call is successful
+      if (data?.success) {
+        setContent(data?.content);
+      } else {
+        toast.error(data?.message);
+      }
+    } catch (error) {
+      toast.error(error?.message);
+    }
+
+    // Disable Loading Indicator
+    setLoading(false);
   };
 
   return (
@@ -86,9 +128,23 @@ const GenerateImages = () => {
           <p className="text-sm">Make this image public</p>
         </div>
 
-        <button className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-teal-600 to-teal-500 text-white px-4 py-2 rounded-lg text-sm mt-6 transition cursor-pointer">
-          <Image className="w-5 text-white" />
-          Generate Image
+        <button
+          disabled={loading}
+          className={`w-full flex items-center justify-center gap-2 bg-gradient-to-r from-teal-600 to-teal-500 text-white px-4 py-2 rounded-lg text-sm mt-6 transition ${
+            loading ? 'opacity-70 cursor-not-allowed' : 'cursor-pointer'
+          }`}
+        >
+          {loading ? (
+            <>
+              <span className="w-4 h-4 my-1 rounded-full border-2 border-t-transparent animate-spin"></span>
+              Generating Image ...
+            </>
+          ) : (
+            <>
+              <Image className="w-5 text-white" />
+              Generate Image
+            </>
+          )}
         </button>
       </form>
 
@@ -99,12 +155,18 @@ const GenerateImages = () => {
           <h1 className="text-xl font-semibold">Generated Image</h1>
         </div>
 
-        <div className="flex-1 flex justify-center items-center">
-          <div className="flex flex-col items-center gap-5 text-sm text-gray-400">
-            <Image className="w-9 h-9" />
-            <p>Enter a topic and click "Generate Image" to get started</p>
+        {!content ? (
+          <div className="flex-1 flex justify-center items-center">
+            <div className="flex flex-col items-center gap-5 text-sm text-gray-400">
+              <Image className="w-9 h-9" />
+              <p>Enter a topic and click "Generate Image" to get started</p>
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="h-full mt-3">
+            <img src={content} alt="image" className="w-full h-full" />
+          </div>
+        )}
       </div>
     </div>
   );

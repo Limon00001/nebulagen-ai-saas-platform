@@ -40,7 +40,7 @@ const App = () => {
 
   return (
     <div>
-      <Toaster />
+      <Toaster position="top-right" />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/ai" element={<Layout />}>
