@@ -245,7 +245,7 @@ const removeImageObject = async (req, res) => {
     // Destructure Request
     const { userId } = req.auth();
     const { object } = req.body;
-    const { image } = req.file;
+    const image = req.file;
     const plan = req.plan;
 
     // if the user has premium plan
