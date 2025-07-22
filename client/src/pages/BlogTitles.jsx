@@ -6,8 +6,15 @@
  */
 
 // External Imports
+import { useAuth } from '@clerk/clerk-react';
+import axios from 'axios';
 import { Hash, Sparkles } from 'lucide-react';
 import { useState } from 'react';
+import { toast } from 'react-hot-toast';
+import Markdown from 'react-markdown';
+
+// Base URL
+axios.defaults.baseURL = import.meta.env.VITE_BASE_URL;
 
 // Blog Titles Component
 const BlogTitles = () => {
@@ -24,10 +31,44 @@ const BlogTitles = () => {
 
   const [selectedCategory, setSelectedCategory] = useState('General');
   const [inputData, setInputData] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [content, setContent] = useState('');
+
+  const { getToken } = useAuth();
 
   // Form Submit Handler
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    try {
+      // Enable Loading Indicator
+      setLoading(true);
+
+      // Generate Article
+      const prompt = `Generate a blog title for the keyword ${inputData} in the category ${selectedCategory}.`;
+
+      // Api Call
+      const { data } = await axios.post(
+        '/api/ai/generate-blog-title',
+        { prompt },
+        {
+          headers: {
+            Authorization: `Bearer ${await getToken()}`,
+          },
+        },
+      );
+
+      // If api call is successful
+      if (data?.success) {
+        setContent(data?.content);
+      } else {
+        toast.error(data?.message);
+      }
+    } catch (error) {
+      toast.error(error?.message);
+    }
+
+    // Disable Loading Indicator
+    setLoading(false);
   };
 
   return (
@@ -72,9 +113,23 @@ const BlogTitles = () => {
         </div>
         <br />
 
-        <button className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#c341f6] to-[#8e37eb] text-white px-4 py-2 rounded-lg text-sm mt-6 transition cursor-pointer">
-          <Hash className="w-5 text-white" />
-          Generate Title
+        <button
+          disabled={loading}
+          className={`w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#c341f6] to-[#8e37eb] text-white px-4 py-2 rounded-lg text-sm mt-6 transition ${
+            loading ? 'opacity-70 cursor-not-allowed' : 'cursor-pointer'
+          }`}
+        >
+          {loading ? (
+            <>
+              <span className="w-4 h-4 my-1 rounded-full border-2 border-t-transparent animate-spin"></span>
+              Generating Title ...
+            </>
+          ) : (
+            <>
+              <Hash className="w-5 text-white" />
+              Generate Title
+            </>
+          )}
         </button>
       </form>
 
@@ -85,12 +140,20 @@ const BlogTitles = () => {
           <h1 className="text-xl font-semibold">Generated Title</h1>
         </div>
 
-        <div className="flex-1 flex justify-center items-center">
-          <div className="flex flex-col items-center gap-5 text-sm text-gray-400">
-            <Hash className="w-9 h-9" />
-            <p>Enter a topic and click "Generate Title" to get started</p>
+        {!content ? (
+          <div className="flex-1 flex justify-center items-center">
+            <div className="flex flex-col items-center gap-5 text-sm text-gray-400">
+              <Hash className="w-9 h-9" />
+              <p>Enter a topic and click "Generate Title" to get started</p>
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="mt-2 overflow-y-scroll h-full text-sm text-slate-600">
+            <div className="reset-tw">
+              <Markdown>{content}</Markdown>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

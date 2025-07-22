@@ -36,9 +36,13 @@ const WriteArticle = () => {
     e.preventDefault();
 
     try {
+      // Enable Loading Indicator
       setLoading(true);
+
+      // Generate Article
       const prompt = `Write an article about ${inputData} in ${selectedLength.text}.`;
 
+      // Api Call
       const { data } = await axios.post(
         '/api/ai/generate-article',
         { prompt, length: selectedLength.length },
@@ -49,6 +53,7 @@ const WriteArticle = () => {
         },
       );
 
+      // If api call is successful
       if (data?.success) {
         setContent(data?.content);
       } else {
@@ -58,6 +63,7 @@ const WriteArticle = () => {
       toast.error(error?.message);
     }
 
+    // Disable Loading Indicator
     setLoading(false);
   };
 
