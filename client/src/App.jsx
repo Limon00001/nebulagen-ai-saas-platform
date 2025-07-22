@@ -6,6 +6,8 @@
  */
 
 // External Imports
+import { useAuth } from '@clerk/clerk-react';
+import { useEffect } from 'react';
 import { Route, Routes } from 'react-router-dom';
 
 // Internal Imports
@@ -23,6 +25,17 @@ import WriteArticle from './pages/WriteArticle';
 
 // App Component
 const App = () => {
+  // Extract Token from Clerk
+  const { getToken } = useAuth();
+
+  // Get Token from Clerk
+  useEffect(() => {
+    const fetchToken = async () => {
+      await getToken();
+    };
+    fetchToken();
+  }, [getToken]);
+
   return (
     <div>
       <Routes>
