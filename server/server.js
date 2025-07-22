@@ -14,6 +14,7 @@ import express from 'express';
 // Internal Imports
 import connectCloudinary from './configs/cloudinary.js';
 import aiRouter from './routes/aiRoutes.js';
+import userRouter from './routes/userRoutes.js';
 
 // Create Express App
 const app = express();
@@ -36,6 +37,7 @@ app.get('/', (req, res) => {
 });
 app.use(requireAuth());
 app.use('/api/ai', aiRouter);
+app.use('/api/user', userRouter);
 
 // Start Server
 app.listen(port, () => console.log(`Server is running on port ${port}`));
