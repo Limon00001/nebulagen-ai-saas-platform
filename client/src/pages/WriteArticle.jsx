@@ -6,8 +6,15 @@
  */
 
 // External Imports
+import { useAuth } from '@clerk/clerk-react';
+import axios from 'axios';
 import { Edit, Sparkles } from 'lucide-react';
 import { useState } from 'react';
+import { toast } from 'react-hot-toast';
+import Markdown from 'react-markdown';
+
+// Base URL
+axios.defaults.baseURL = import.meta.env.VITE_BASE_URL;
 
 // Write Article Component
 const WriteArticle = () => {
@@ -19,10 +26,39 @@ const WriteArticle = () => {
 
   const [selectedLength, setSelectedLength] = useState(articleLength[0]);
   const [inputData, setInputData] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [content, setContent] = useState('');
+
+  const { getToken } = useAuth();
 
   // Form Submit Handler
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
+    try {
+      setLoading(true);
+      const prompt = `Write an article about ${inputData} in ${selectedLength.text}.`;
+
+      const { data } = await axios.post(
+        '/api/ai/generate-article',
+        { prompt, length: selectedLength.length },
+        {
+          headers: {
+            Authorization: `Bearer ${await getToken()}`,
+          },
+        },
+      );
+
+      if (data?.success) {
+        setContent(data?.content);
+      } else {
+        toast.error(data?.message);
+      }
+    } catch (error) {
+      toast.error(error?.message);
+    }
+
+    setLoading(false);
   };
 
   return (
@@ -67,9 +103,23 @@ const WriteArticle = () => {
         </div>
         <br />
 
-        <button className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#3588f2] to-[#0bb0d7] text-white px-4 py-2 rounded-lg text-sm mt-6 transition cursor-pointer">
-          <Edit className="w-5 text-white" />
-          Generate Article
+        <button
+          disabled={loading}
+          className={`w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#3588f2] to-[#0bb0d7] text-white px-4 py-2 rounded-lg text-sm mt-6 transition ${
+            loading ? 'opacity-70 cursor-not-allowed' : 'cursor-pointer'
+          }`}
+        >
+          {loading ? (
+            <>
+              <span className="w-4 h-4 my-1 rounded-full border-2 border-t-transparent animate-spin"></span>
+              Generating Article ...
+            </>
+          ) : (
+            <>
+              <Edit className="w-5 text-white" />
+              Generate Article
+            </>
+          )}
         </button>
       </form>
 
@@ -80,12 +130,20 @@ const WriteArticle = () => {
           <h1 className="text-xl font-semibold">Article Preview</h1>
         </div>
 
-        <div className="flex-1 flex justify-center items-center">
-          <div className="flex flex-col items-center gap-5 text-sm text-gray-400">
-            <Edit className="w-9 h-9" />
-            <p>Enter a topic and click "Generate Article" to get started</p>
+        {!content ? (
+          <div className="flex-1 flex justify-center items-center">
+            <div className="flex flex-col items-center gap-5 text-sm text-gray-400">
+              <Edit className="w-9 h-9" />
+              <p>Enter a topic and click "Generate Article" to get started</p>
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="mt-2 overflow-y-scroll h-full text-sm text-slate-600">
+            <div className="reset-tw">
+              <Markdown>{content}</Markdown>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
