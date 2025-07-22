@@ -6,33 +6,56 @@
  */
 
 // External Imports
-import { Protect } from '@clerk/clerk-react';
+import { Protect, useAuth } from '@clerk/clerk-react';
+import axios from 'axios';
 import { Gem, Sparkles } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { toast } from 'react-hot-toast';
 
 // Internal Imports
-import { dummyCreationData } from '../assets/assets';
 import CreationItem from '../components/CreationItem';
+import Loader from '../components/Loader';
+
+// Base URL
+axios.defaults.baseURL = import.meta.env.VITE_BASE_URL;
 
 // Dashboard Component
 const Dashboard = () => {
   const [creations, setCreations] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // Get User Token
+  const { getToken } = useAuth();
 
   // Fetch Creations
-  const fetchCreations = async () => {
+  const getDashboardData = async () => {
     try {
-      setCreations(dummyCreationData);
+      const { data } = await axios.get('/api/user/get-user-creations', {
+        headers: {
+          Authorization: `Bearer ${await getToken()}`,
+        },
+      });
+
+      // If api call is successful
+      if (data?.success) {
+        setCreations(data?.creations);
+      } else {
+        toast.error(data?.message);
+      }
     } catch (error) {
-      console.log(error);
+      toast.error(error?.message);
     }
+
+    // Disable Loading Indicator
+    setLoading(false);
   };
 
   // Use Effect
   useEffect(() => {
-    fetchCreations();
+    getDashboardData();
   }, []);
 
-  return (
+  return !loading ? (
     <div className="h-full overflow-y-scroll p-6">
       <div className="flex justify-start gap-4 flex-wrap">
         {/* Total Creations */}
@@ -71,6 +94,8 @@ const Dashboard = () => {
         ))}
       </div>
     </div>
+  ) : (
+    <Loader />
   );
 };
 
