@@ -202,7 +202,7 @@ const removeImageBackground = async (req, res) => {
   try {
     // Destructure Request
     const { userId } = req.auth();
-    const { image } = req.file;
+    const image = req.file;
     const plan = req.plan;
 
     // if the user has premium plan
@@ -218,7 +218,7 @@ const removeImageBackground = async (req, res) => {
     const { secure_url } = await cloudinary.uploader.upload(image.path, {
       transformation: [
         {
-          effect: 'remove_background',
+          effect: 'background_removal',
           background_removal: 'remove_the_background',
         },
       ],
