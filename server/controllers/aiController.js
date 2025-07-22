@@ -10,8 +10,10 @@ import { clerkClient } from '@clerk/express';
 import axios from 'axios';
 import { v2 as cloudinary } from 'cloudinary';
 import OpenAI from 'openai';
+import pdf from 'pdf-parse/lib/pdf-parse.js';
 
 // Internal Imports
+import fs from 'fs';
 import sql from '../configs/db.js';
 
 // OpenAI Instance
@@ -283,6 +285,83 @@ const removeImageObject = async (req, res) => {
   }
 };
 
+// Resume Review
+const resumeReview = async (req, res) => {
+  try {
+    // Destructure Request
+    const { userId } = req.auth();
+    const resume = req.file;
+    const plan = req.plan;
+
+    // if the user has premium plan
+    if (plan !== 'premium') {
+      return res.status(400).json({
+        success: false,
+        message:
+          'This feature is only available for premium users. Please upgrade to a premium plan.',
+      });
+    }
+
+    // Check if resume is uploaded
+    if (!resume) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please upload a resume.',
+      });
+    }
+
+    // Check if resume is pdf
+    if (resume.mimetype !== 'application/pdf') {
+      return res.status(400).json({
+        success: false,
+        message: 'Please upload a PDF resume.',
+      });
+    }
+
+    // Check if resume size is less than 5MB
+    if (resume.size > 5 * 1024 * 1024) {
+      return res.status(400).json({
+        success: false,
+        message: 'Resume size should be less than 5MB.',
+      });
+    }
+
+    const dataBuffer = fs.readFileSync(resume.path);
+    const pdfData = pdf(dataBuffer);
+
+    const prompt = `Review the following resume and provide constructive feedback on its strengths, weaknesses, and areas for improvement. The resume is in the following format:\n\n${pdfData.text}`;
+
+    // Response from OpenAI
+    const response = await AI.chat.completions.create({
+      model: 'gemini-2.0-flash',
+      messages: [
+        {
+          role: 'user',
+          content: prompt,
+        },
+      ],
+      max_tokens: 1000,
+      temperature: 0.7,
+    });
+
+    // Content from OpenAI
+    const content = response.choices[0].message.content;
+
+    // Insert into database
+    await sql` INSERT INTO creations (user_id, prompt, content, type) VALUES (${userId}, 'Review the uploaded resume', ${content}, 'resume-review');`;
+
+    // Return response
+    return res.status(200).json({
+      success: true,
+      message: 'Object removed successfully.',
+      content,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 // Export
 export {
   generateArticle,
@@ -290,4 +369,5 @@ export {
   generateImage,
   removeImageBackground,
   removeImageObject,
+  resumeReview,
 };
