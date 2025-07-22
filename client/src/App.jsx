@@ -6,8 +6,7 @@
  */
 
 // External Imports
-import { useAuth } from '@clerk/clerk-react';
-import { useEffect } from 'react';
+import { Toaster } from 'react-hot-toast';
 import { Route, Routes } from 'react-router-dom';
 
 // Internal Imports
@@ -25,6 +24,8 @@ import WriteArticle from './pages/WriteArticle';
 
 // App Component
 const App = () => {
+  // Check if user is logged in
+  /*
   // Extract Token from Clerk
   const { getToken } = useAuth();
 
@@ -35,9 +36,11 @@ const App = () => {
     };
     fetchToken();
   }, [getToken]);
+*/
 
   return (
     <div>
+      <Toaster />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/ai" element={<Layout />}>
